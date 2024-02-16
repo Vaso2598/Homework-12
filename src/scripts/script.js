@@ -1,42 +1,48 @@
-const API_URL =
-	"https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=3fd2be6f0c70a2a598f084ddfb75487c&page=1";
-const IMG_PATH = "https://image.tmdb.org/t/p/w1280";
-const SEARCH_API = 'https://api.themoviedb.org/3/search/movie?api_key=3fd2be6f0c70a2a598f084ddfb75487c&query="';
+const options = {
+	method: "GET",
+	headers: {
+		accept: "application/json",
+		Authorization:
+			"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwM2U3NjE1ZmI2MTE5OGI2ZWVlNzlmZThmMTlkMGRjYSIsInN1YiI6IjY1Y2U3NmY4MTA5MjMwMDE3YzBmMGU0ZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.TCHor_aJoxZ_hvDmqlqVKB15yiyO4oAh0tEUJ7-T77Y",
+	},
+};
 
+// Movie List API
+
+fetch("https://api.themoviedb.org/3/movie/popular?language=en-US&page=1", options)
+	.then((movieList) => movieList.json())
+	.then((movieList) => {
+		renderMovies(movieList.results);
+	})
+	.catch((err) => console.error(err));
+
+const IMG_PATH = "https://image.tmdb.org/t/p/w1280";
 const main = document.getElementById("main");
 const form = document.getElementById("form");
 const search = document.getElementById("search");
 
-fetchMovies(API_URL);
-
-async function fetchMovies(url) {
-	// console.log(url);
-	const res = await fetch(url);
-	// console.log(res);
-	const data = await res.json();
-	// console.log(data);
-	showMovies(data.results);
-}
-
-function showMovies(movies) {
+const renderMovies = (movies) => {
 	console.log(movies);
 	main.innerHTML = "";
 
 	movies.map((movie) => {
-		const {title, poster_path, release_date, vote_average} = movie;
+		const {title, poster_path, release_date, vote_average, id} = movie;
 		const movieElement = document.createElement("div");
 		movieElement.classList.add("movie");
 		movieElement.innerHTML = `
-            <img src="${IMG_PATH + poster_path}" alt="${title}">
-            <div>
-                <h2>${title}</h2>
-                <span class="date">${release_date.slice(0, 4)}</span>
-                <span class="rating ${classByRating(vote_average)}">${vote_average.toFixed(2)}</span>
-            </div>			
-        `;
+		 <img src="${IMG_PATH + poster_path}" alt="${title}">
+             <div>
+                 <h3>${title}</h3>
+                 <span class="date">${release_date.slice(0, 4)}</span>
+                 <span class="rating ${classByRating(vote_average)}">${vote_average.toFixed(2)}</span>
+             </div>
+         `;
+		movieElement.addEventListener("click", () => {
+			window.location.href = `./description.html?id=${id}`;
+		});
 		main.appendChild(movieElement);
 	});
-}
+};
 
 function classByRating(rating) {
 	if (rating >= 7) {
@@ -60,7 +66,3 @@ form.addEventListener("submit", (e) => {
 		window.location.reload();
 	}
 });
-
-function openTab() {
-	window.open("", "_blank");
-}
