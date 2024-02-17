@@ -9,7 +9,7 @@ const options = {
 
 const urlParams = new URLSearchParams(window.location.search);
 const movieID = urlParams.get("id");
-console.log(movieID);
+// console.log(movieID);
 
 fetch(`https://api.themoviedb.org/3/movie/${movieID}?language=en-US`, options)
 	.then((res) => res.json())
@@ -23,9 +23,10 @@ const IMG_PATH = "https://image.tmdb.org/t/p/w1280";
 const description = document.getElementById("description");
 const form = document.getElementById("form");
 const search = document.getElementById("search");
+const seats = document.getElementById("seats");
 
 const renderDescription = (json) => {
-	console.log(json);
+	// console.log(json);
 	description.innerHTML = "";
 	const overviewElement = document.createElement("div");
 	overviewElement.classList.add("description");
@@ -40,8 +41,30 @@ const renderDescription = (json) => {
 			<p>${json.overview}</p>
 		</div>
 	`;
-
-	json.title;
-	console.log(json.title);
 	description.appendChild(overviewElement);
 };
+
+// Seats
+
+let checkboxes = document.querySelectorAll("input[type=checkbox][name=settings]");
+let enabledSettings = [];
+const sumEl = document.getElementById("sum");
+
+checkboxes.forEach(function (checkbox) {
+	checkbox.addEventListener("change", function () {
+		enabledSettings = Array.from(checkboxes)
+			.filter((i) => i.checked)
+			.map((i) => i.value);
+
+		// console.log(enabledSettings);
+		let sum = 0;
+		enabledSettings.map((price) => {
+			// console.log(price);
+			let priceFloat = parseFloat(price);
+			// console.log(typeof priceInt);
+			sum += priceFloat;
+			// console.log(sum);
+		});
+		sumEl.innerHTML = sum + "$";
+	});
+});
